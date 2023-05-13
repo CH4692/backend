@@ -6,25 +6,25 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
 @Builder
-@Document("orders")
+@Document("products")
 @AllArgsConstructor
 @NoArgsConstructor
-public class Products {
+public class Product {
     @Id
     private String id;
     @NonNull
     private String SKU;
     @NonNull
-    private String name;
+    private String Name;
     @NonNull
-    private String price;
+    private String Price;
     @NonNull
-    private String category;
+    private String Category;
     @NonNull
-    private String size;
+    private String Size;
     @NonNull
-    private String ingredients;
+    private String Ingredients;
     @NonNull
-    private String launch;
+    private String Launch;
 
 }

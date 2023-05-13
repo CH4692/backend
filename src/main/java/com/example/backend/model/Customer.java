@@ -5,28 +5,19 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
+// auto generates getters and setters
 @Builder
-@Document("stores")
+// constructor made easier
+@Document("customers")
 @AllArgsConstructor
 @NoArgsConstructor
-public class Stores {
+public class Customer {
     @Id
     private String id;
     @NonNull
-    private String storeID;
-    @NonNull
-    private String zipcode;
-    @NonNull
-    private String state_abbr;
+    private String customerID;
     @NonNull
     private String latitude;
     @NonNull
     private String longitude;
-    @NonNull
-    private String city;
-    @NonNull
-    private String state;
-    @NonNull
-    private String distance;
-
 }

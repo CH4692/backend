@@ -11,7 +11,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document("orderItems")
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrderItems {
+public class OrderItem {
     @Id
     private String id;
     @NonNull

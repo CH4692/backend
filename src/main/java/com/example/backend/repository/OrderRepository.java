@@ -1,9 +1,9 @@
 package com.example.backend.repository;
 
-import com.example.backend.model.Stores;
+import com.example.backend.model.Order;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface StoresRepository extends MongoRepository<Stores,String> {
+public interface OrderRepository extends MongoRepository<Order,String> {
 }

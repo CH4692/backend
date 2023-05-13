@@ -8,16 +8,22 @@ import org.springframework.data.mongodb.core.mapping.Document;
 // auto generates getters and setters
 @Builder
 // constructor made easier
-@Document("customers")
+@Document("orders")
 @AllArgsConstructor
 @NoArgsConstructor
-public class Customers {
+public class Order {
     @Id
     private String id;
     @NonNull
+    private String orderID;
+    @NonNull
     private String customerID;
     @NonNull
-    private String latitude;
+    private String storeID;
     @NonNull
-    private String longitude;
+    private String orderDate;
+    @NonNull
+    private String nItems;
+    @NonNull
+    private String total;
 }
