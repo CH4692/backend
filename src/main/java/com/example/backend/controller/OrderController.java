@@ -1,19 +1,23 @@
 package com.example.backend.controller;
 
 import com.example.backend.model.Order;
+import com.example.backend.model.OrderDTO;
 import com.example.backend.model.User;
 import com.example.backend.repository.OrderRepository;
+import com.example.backend.service.AnalysisService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/api/v1/orders")
 @RequiredArgsConstructor
 public class OrderController {
 
     private final OrderRepository ordersRepository;
+    private final AnalysisService analysisService;
 
     @GetMapping("/all")
     public ResponseEntity<List<Order>> getAllOrders() {
@@ -27,9 +31,10 @@ public class OrderController {
     }
 
     @PostMapping("/new")
-    public ResponseEntity<Order> createOrder() {
-
-        return ResponseEntity.ok(null);
+    public ResponseEntity<OrderDTO> createOrder(@RequestBody OrderDTO order) {
+        analysisService.makeOrder(order);
+        //ordersRepository.save(order);
+        return ResponseEntity.ok(order);
     }
 
     @PutMapping("/{id}")

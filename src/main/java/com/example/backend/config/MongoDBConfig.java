@@ -22,7 +22,7 @@ public class MongoDBConfig extends AbstractMongoClientConfiguration {
 
     @Override
     public MongoClient mongoClient() {
-        return MongoClients.create(String.format("mongodb://%s:%d", host, port));
+        return MongoClients.create(String.format("mongodb://%s:%d",  host, port));
     }
 }
 

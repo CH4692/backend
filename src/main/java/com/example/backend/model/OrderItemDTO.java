@@ -4,26 +4,21 @@ import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 // auto generates getters and setters
 @Builder
 // constructor made easier
-@Document("orders")
 @AllArgsConstructor
 @NoArgsConstructor
-public class Order {
-    @Id
+public class OrderItemDTO {
+
     private String id;
-    @NonNull
-    private String orderID;
-    @NonNull
-    private String customerID;
-    @NonNull
-    private String storeID;
-    @NonNull
-    private String orderDate;
-    @NonNull
-    private int nItems;
-    @NonNull
-    private Double total;
+    private String name;
+    private String size;
+    private int amount;
+    private double price;
+    private String sku;
 }

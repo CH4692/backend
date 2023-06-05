@@ -2,6 +2,7 @@ package com.example.backend.model;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
@@ -13,11 +14,12 @@ public class Product {
     @Id
     private String id;
     @NonNull
+    @Indexed(unique = true)
     private String SKU;
     @NonNull
     private String Name;
     @NonNull
-    private String Price;
+    private Double Price;
     @NonNull
     private String Category;
     @NonNull
