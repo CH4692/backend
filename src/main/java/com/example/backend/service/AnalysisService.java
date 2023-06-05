@@ -6,6 +6,7 @@ import com.example.backend.repository.OrderRepository;
 import com.example.backend.repository.ProductRepository;
 import com.example.backend.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,8 @@ public class AnalysisService {
     public final ProductRepository productRepository;
     public final StoreRepository storeRepository;
     public final OrderRepository orderRepository;
+
+    public final CacheService cacheService;
 
     @Cacheable("all-top-products")
     public List<TopProduct> getTopProducts() {
@@ -107,7 +110,6 @@ public class AnalysisService {
     public void makeOrder(OrderDTO orderDTO) {
         // create Order:
         // set totalAmount to total
-
         // create OrderItem:
         // for every Item and save its SKU and the given orderID
 
@@ -138,8 +140,10 @@ public class AnalysisService {
 
         System.out.println(newOrder);
         orderRepository.save(newOrder);
+        cacheService.clearCache();
 
     }
+
 
     @Cacheable("all-top-gainer")
     public List<TopGainerStore> getTopGainerStores() {

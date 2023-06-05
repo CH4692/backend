@@ -33,7 +33,6 @@ public class OrderController {
     @PostMapping("/new")
     public ResponseEntity<OrderDTO> createOrder(@RequestBody OrderDTO order) {
         analysisService.makeOrder(order);
-        //ordersRepository.save(order);
         return ResponseEntity.ok(order);
     }
 
