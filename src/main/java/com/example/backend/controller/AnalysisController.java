@@ -20,6 +20,7 @@ public class AnalysisController {
 
     @GetMapping("/all/top-products")
     public ResponseEntity<List<TopProduct>> getAllTopProducts() {
+        analysisService.dynamicPricing();
         List<TopProduct> topProducts = analysisService.getTopProducts();
         return ResponseEntity.ok(topProducts);
     }

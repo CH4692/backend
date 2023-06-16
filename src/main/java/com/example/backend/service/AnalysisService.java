@@ -36,6 +36,67 @@ public class AnalysisService {
         return topProducts;
     }
 
+    public void dynamicPricing() {
+        // check after every analysis call
+        // get top products in relation to their orders
+        // calculate the average order of the most and least sold product
+        // Make a list of every product that is over 75% over the double the average of products order count
+        // Make a list of every product that is lower than 25% under the average of products order count
+        // If a product is over 75% of the average order count then increase the price to 10%
+        // If a product is lower than the average order count then decrease the price to 10%
+
+        List<TopProduct> productList = getTopProducts();
+        TreeMap<Long, String> sortedMap = getAllTopProductsOrdered();
+        List<Product> setHigerList = new ArrayList<>();
+        List<Product> setLowerList = new ArrayList<>();
+
+        Long getHighestOrder = sortedMap.firstEntry().getKey();
+        Long getLowestOrder = sortedMap.lastEntry().getKey();
+        Long averageOrder = (getHighestOrder + getLowestOrder) / 2;
+        Double highGate = (averageOrder * 1.25);
+        Double lowGate = (averageOrder * 0.75);
+        System.out.println(productList);
+        System.out.println(sortedMap);
+        System.out.println("highest: " + highGate);
+        System.out.println("lowest: " + lowGate);
+
+        // iterate through sortedMap and add Products that need to be changed
+        for (Map.Entry<Long, String> entry:  sortedMap.entrySet()) {
+            if (entry.getKey() > highGate) {
+                setHigerList.add(productRepository.findProductBySKU(entry.getValue()));
+
+            }
+
+            if (entry.getKey() < lowGate) {
+                setLowerList.add(productRepository.findProductBySKU(entry.getValue()));
+            }
+        }
+
+        System.out.println(setHigerList);
+        System.out.println(setLowerList);
+
+
+    }
+
+    @Cacheable("top-products-ordered")
+    public TreeMap<Long, String> getAllTopProductsOrdered() {
+        // filter orderItems nach SKU -> count SKU
+        List<Product> allProducts = productRepository.findAll();
+
+        Map<String, Long> topProductMap = new HashMap<>();
+        TreeMap<Long, String> sortedMap = new TreeMap<>(Collections.reverseOrder());
+        for (Product product: allProducts) {
+            topProductMap.put(product.getSKU(),orderItemsRepository.countBySKU(product.getSKU()));
+        }
+
+        for (Map.Entry<String, Long> entry : topProductMap.entrySet()) {
+            sortedMap.put(entry.getValue(), entry.getKey());
+        }
+
+
+        return sortedMap;
+    }
+
     @Cacheable("top-product")
     public TopProduct getTopProduct() {
         // filter orderItems nach SKU -> count SKU
