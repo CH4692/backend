@@ -21,20 +21,28 @@ public class AnalysisService {
     public final ProductRepository productRepository;
     public final StoreRepository storeRepository;
     public final OrderRepository orderRepository;
-
     public final CacheService cacheService;
 
     @Cacheable("all-top-products")
     public List<TopProduct> getTopProducts() {
         // filter orderItems nach SKU -> count SKU
-        List<Product> allProducts = productRepository.findAll();
-        List<TopProduct> topProducts = new ArrayList<>();
+        List<Product> allProducts = getAllProducts();
+        List<TopProduct> topProducts = getAllTopProductsOrdered();
 
-        for (Product product: allProducts) {
-            topProducts.add(new TopProduct(product.getName(), product.getCategory(), product.getSize(), orderItemsRepository.countBySKU(product.getSKU())));
-        }
         return topProducts;
     }
+
+    @Cacheable("all-products")
+    public List<Product> getAllProducts() {
+        return productRepository.findAll();
+    }
+
+    @Cacheable("all-stores")
+    public List<Store> getAllStores() {
+        return storeRepository.findAll();
+    }
+
+
 
     public void dynamicPricing() {
         // check after every analysis call
@@ -45,30 +53,26 @@ public class AnalysisService {
         // If a product is over 75% of the average order count then increase the price to 10%
         // If a product is lower than the average order count then decrease the price to 10%
 
-        List<TopProduct> productList = getTopProducts();
-        TreeMap<Long, String> sortedMap = getAllTopProductsOrdered();
+        List<TopProduct> topProducts = getTopProducts();
         List<Product> setHigerList = new ArrayList<>();
         List<Product> setLowerList = new ArrayList<>();
 
-        Long getHighestOrder = sortedMap.firstEntry().getKey();
-        Long getLowestOrder = sortedMap.lastEntry().getKey();
+        Long getHighestOrder = topProducts.get(0).getAmountOfOrder();
+        Long getLowestOrder = topProducts.get(topProducts.size() - 1).getAmountOfOrder();
         Long averageOrder = (getHighestOrder + getLowestOrder) / 2;
         Double highGate = (averageOrder * 1.25);
         Double lowGate = (averageOrder * 0.75);
-        System.out.println(productList);
-        System.out.println(sortedMap);
         System.out.println("highest: " + highGate);
         System.out.println("lowest: " + lowGate);
 
         // iterate through sortedMap and add Products that need to be changed
-        for (Map.Entry<Long, String> entry:  sortedMap.entrySet()) {
-            if (entry.getKey() > highGate) {
-                setHigerList.add(productRepository.findProductBySKU(entry.getValue()));
-
+        for (TopProduct entry:  topProducts) {
+            if (entry.getAmountOfOrder() > highGate) {
+                //setHigerList.add(productRepository.findProductBySKU(""));
             }
 
-            if (entry.getKey() < lowGate) {
-                setLowerList.add(productRepository.findProductBySKU(entry.getValue()));
+            if (entry.getAmountOfOrder() < lowGate) {
+                //setLowerList.add(productRepository.findProductBySKU("");
             }
         }
 
@@ -79,9 +83,10 @@ public class AnalysisService {
     }
 
     @Cacheable("top-products-ordered")
-    public TreeMap<Long, String> getAllTopProductsOrdered() {
+    public List<TopProduct> getAllTopProductsOrdered() {
         // filter orderItems nach SKU -> count SKU
-        List<Product> allProducts = productRepository.findAll();
+        List<Product> allProducts = getAllProducts();
+        List<TopProduct> topProducts = new ArrayList<>();
 
         Map<String, Long> topProductMap = new HashMap<>();
         TreeMap<Long, String> sortedMap = new TreeMap<>(Collections.reverseOrder());
@@ -93,32 +98,32 @@ public class AnalysisService {
             sortedMap.put(entry.getValue(), entry.getKey());
         }
 
+        for (Map.Entry<Long, String> entry : sortedMap.entrySet()) {
+            Product product = productRepository.findProductBySKU(entry.getValue());
+            topProducts.add(new TopProduct(product.getName(), product.getCategory(), product.getSize(), entry.getKey()));
+        }
 
-        return sortedMap;
+        return topProducts;
+    }
+
+    public void test() {
+        List<Product> allProducts = getAllProducts();
+        for (Product item: allProducts) {
+            orderItemsRepository.countBySKU(item.getSKU());
+
+        }
     }
 
     @Cacheable("top-product")
     public TopProduct getTopProduct() {
-        // filter orderItems nach SKU -> count SKU
-        List<Product> allProducts = productRepository.findAll();
+        List<TopProduct> topProducts = getAllTopProductsOrdered();
 
-        Map<String, Long> topProductMap = new HashMap<>();
-        TreeMap<Long, String> sortedMap = new TreeMap<>(Collections.reverseOrder());
-        for (Product product: allProducts) {
-            topProductMap.put(product.getSKU(),orderItemsRepository.countBySKU(product.getSKU()));
-        }
-
-        for (Map.Entry<String, Long> entry : topProductMap.entrySet()) {
-            sortedMap.put(entry.getValue(), entry.getKey());
-        }
-        Product product = productRepository.findProductBySKU(sortedMap.firstEntry().getValue());
-
-        return new TopProduct(product.getName(), product.getCategory(), product.getSize(), sortedMap.firstKey());
+        return topProducts.get(0);
     }
 
     @Cacheable("all-top-stores")
     public List<TopStore>  getTopStores() {
-        List<Store> allStores = storeRepository.findAll();
+        List<Store> allStores = getAllStores();
         List<TopStore> topStores = new ArrayList<>();
 
 
@@ -128,13 +133,12 @@ public class AnalysisService {
             topStoreMap.put(store.getStoreID(),orderRepository.countByStoreID(store.getStoreID()));
             topStores.add(new TopStore(store.getCity(),store.getState(), orderRepository.countByStoreID(store.getStoreID())));
         }
-
         return topStores;
     }
 
     @Cacheable("top-store")
     public TopStore getTopStore() {
-        List<Store> allStores = storeRepository.findAll();
+        List<Store> allStores = getAllStores();
         Map<String, Long> topStoreMap = new HashMap<>();
         TreeMap<Long, String> sortedMap = new TreeMap<>(Collections.reverseOrder());
         for (Store store: allStores) {
@@ -177,7 +181,7 @@ public class AnalysisService {
         Random random = new Random();
         int zahl = random.nextInt(1000000);
         String newCustomerID = "C" + zahl;
-        List<Store> stores = storeRepository.findAll();
+        List<Store> stores = getAllStores();
         String newOrderID = "" + (orderRepository.count());
         String randomStoreID = stores.get(random.nextInt(stores.size())).getStoreID();
         int nItems = 0;
@@ -208,7 +212,7 @@ public class AnalysisService {
 
     @Cacheable("all-top-gainer")
     public List<TopGainerStore> getTopGainerStores() {
-        List<Store> stores = storeRepository.findAll();
+        List<Store> stores = getAllStores();
         List<TopGainerStore> topGainerStores = new ArrayList<>();
 
         for (Store store: stores) {
@@ -219,7 +223,7 @@ public class AnalysisService {
 
     @Cacheable("top-gainer")
     public TopGainerStore getTopGainerStore() {
-        List<Store> stores = storeRepository.findAll();
+        List<Store> stores = getAllStores();
         TreeMap<Double, String> totalMap = new TreeMap<>(Collections.reverseOrder());
 
         for (Store store: stores) {

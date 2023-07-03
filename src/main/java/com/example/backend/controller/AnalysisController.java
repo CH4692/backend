@@ -1,9 +1,6 @@
 package com.example.backend.controller;
 
-import com.example.backend.model.TopGainerStore;
-import com.example.backend.model.TopProduct;
-import com.example.backend.model.TopSeason;
-import com.example.backend.model.TopStore;
+import com.example.backend.model.*;
 import com.example.backend.service.AnalysisService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +17,7 @@ public class AnalysisController {
 
     @GetMapping("/all/top-products")
     public ResponseEntity<List<TopProduct>> getAllTopProducts() {
-        analysisService.dynamicPricing();
+        //analysisService.dynamicPricing();
         List<TopProduct> topProducts = analysisService.getTopProducts();
         return ResponseEntity.ok(topProducts);
     }
@@ -66,6 +63,21 @@ public class AnalysisController {
         double totalIncome = analysisService.getTotalIncome();
         return ResponseEntity.ok(totalIncome);
     }
+
+    @GetMapping("/all/test")
+    public void getTest() {
+        analysisService.getAllProducts();
+        analysisService.getTopProduct();
+        //      TopProduct topProductsOrdered = analysisService.getTopProduct();
+//        List<TopProduct> topProducts = analysisService.getTopProducts();
+//        TopGainerStore gainerStore = analysisService.getTopGainerStore();
+//        List<TopGainerStore> gainerStores = analysisService.getTopGainerStores();
+//        List<TopStore> topStores = analysisService.getTopStores();
+//        TopStore topStore = analysisService.getTopStore();
+//        List<TopSeason> topSeasons = analysisService.getTopSeasons();
+//        double totalIncome = analysisService.getTotalIncome();
+    }
+
 
 
 

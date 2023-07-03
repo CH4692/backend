@@ -17,30 +17,30 @@ public class StoreController {
     private final StoreRepository storeRepository;
 
     @GetMapping("/all")
-    public ResponseEntity<List<Store>> getAllOrders() {
+    public ResponseEntity<List<Store>> getAllStores() {
         List<Store> stores = storeRepository.findAll();
         return ResponseEntity.ok(stores);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Store> getOrderById(@PathVariable("id") String id) {
+    public ResponseEntity<Store> getStoreById(@PathVariable("id") String id) {
         return null;
     }
 
     @PostMapping("/new")
-    public ResponseEntity<Store> createOrder() {
+    public ResponseEntity<Store> createStore() {
 
         return ResponseEntity.ok(null);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Store> updateOrder(@PathVariable String id, @RequestBody Store store) {
+    public ResponseEntity<Store> updateStore(@PathVariable String id, @RequestBody Store store) {
         return null;
     }
 
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteOrder(@PathVariable String id) {
+    public ResponseEntity<Void> deleteStore(@PathVariable String id) {
         return null;
     }
 }
