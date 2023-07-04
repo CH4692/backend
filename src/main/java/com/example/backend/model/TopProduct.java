@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 public class TopProduct {
     private String name;
     private String category;
+    private String sku;
     private String size;
     private long amountOfOrder;
 }

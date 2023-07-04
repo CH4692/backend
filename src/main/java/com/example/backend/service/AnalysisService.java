@@ -5,6 +5,7 @@ import com.example.backend.repository.OrderItemsRepository;
 import com.example.backend.repository.OrderRepository;
 import com.example.backend.repository.ProductRepository;
 import com.example.backend.repository.StoreRepository;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -44,44 +45,6 @@ public class AnalysisService {
 
 
 
-    public void dynamicPricing() {
-        // check after every analysis call
-        // get top products in relation to their orders
-        // calculate the average order of the most and least sold product
-        // Make a list of every product that is over 75% over the double the average of products order count
-        // Make a list of every product that is lower than 25% under the average of products order count
-        // If a product is over 75% of the average order count then increase the price to 10%
-        // If a product is lower than the average order count then decrease the price to 10%
-
-        List<TopProduct> topProducts = getTopProducts();
-        List<Product> setHigerList = new ArrayList<>();
-        List<Product> setLowerList = new ArrayList<>();
-
-        Long getHighestOrder = topProducts.get(0).getAmountOfOrder();
-        Long getLowestOrder = topProducts.get(topProducts.size() - 1).getAmountOfOrder();
-        Long averageOrder = (getHighestOrder + getLowestOrder) / 2;
-        Double highGate = (averageOrder * 1.25);
-        Double lowGate = (averageOrder * 0.75);
-        System.out.println("highest: " + highGate);
-        System.out.println("lowest: " + lowGate);
-
-        // iterate through sortedMap and add Products that need to be changed
-        for (TopProduct entry:  topProducts) {
-            if (entry.getAmountOfOrder() > highGate) {
-                //setHigerList.add(productRepository.findProductBySKU(""));
-            }
-
-            if (entry.getAmountOfOrder() < lowGate) {
-                //setLowerList.add(productRepository.findProductBySKU("");
-            }
-        }
-
-        System.out.println(setHigerList);
-        System.out.println(setLowerList);
-
-
-    }
-
     @Cacheable("top-products-ordered")
     public List<TopProduct> getAllTopProductsOrdered() {
         // filter orderItems nach SKU -> count SKU
@@ -100,18 +63,10 @@ public class AnalysisService {
 
         for (Map.Entry<Long, String> entry : sortedMap.entrySet()) {
             Product product = productRepository.findProductBySKU(entry.getValue());
-            topProducts.add(new TopProduct(product.getName(), product.getCategory(), product.getSize(), entry.getKey()));
+            topProducts.add(new TopProduct(product.getName(), product.getCategory(), product.getSKU(),product.getSize(), entry.getKey()));
         }
 
         return topProducts;
-    }
-
-    public void test() {
-        List<Product> allProducts = getAllProducts();
-        for (Product item: allProducts) {
-            orderItemsRepository.countBySKU(item.getSKU());
-
-        }
     }
 
     @Cacheable("top-product")
