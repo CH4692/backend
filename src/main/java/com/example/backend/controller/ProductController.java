@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
+
 
 @CrossOrigin
 @RestController
@@ -28,7 +30,13 @@ public class ProductController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Product> getProductById(@PathVariable("id") String id) {
-        return null;
+        String objectID = id.replace("\n", "").trim();
+        Optional<Product> product = productRepository.findById(objectID);
+        if(product.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(product.get());
     }
 
     @PostMapping("/new")
@@ -51,13 +59,18 @@ public class ProductController {
     }
 
 
-    @DeleteMapping("/{sku}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable String sku) {
-        Product product = productRepository.findProductBySKU(sku);
-        if(product == null ){
+
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteProduct(@PathVariable String id) {
+        String objectID = id.replace("\n","").trim();
+        Optional<Product> product = productRepository.findById(objectID);
+
+        if (product.isEmpty()){
             return ResponseEntity.notFound().build();
         }
-        productRepository.deleteBySKU(sku);
+
+        productRepository.delete(product.get());
         return ResponseEntity.noContent().build();
     }
 }
